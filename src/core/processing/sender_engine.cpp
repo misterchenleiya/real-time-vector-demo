@@ -22,7 +22,7 @@ bool SenderEngine::loadMedia(const QString &path, QString *error)
 {
     if (!configured_) {
         if (error != nullptr) {
-            *error = QStringLiteral("发送引擎尚未加载配置");
+            *error = QStringLiteral("The sender engine has not been configured yet.");
         }
         return false;
     }
@@ -48,26 +48,30 @@ QString SenderEngine::mediaPath() const
 void SenderEngine::start()
 {
     if (!configured_) {
-        emit errorOccurred(QStringLiteral("发送引擎尚未配置"));
+        emit errorOccurred(QStringLiteral("The sender engine is not configured."));
         return;
     }
     if (!mediaProcessor_.isOpen()) {
-        emit errorOccurred(QStringLiteral("尚未加载本地图片或视频"));
+        emit errorOccurred(QStringLiteral("No local image or video is loaded."));
         return;
     }
 
     const int intervalMs = std::max(1, 1000 / std::max(1, config_.processing.targetFps));
     timer_.start(intervalMs);
     resetMetricsWindow();
-    emit stateMessage(QStringLiteral("发送引擎已启动"));
+    emit stateMessage(QStringLiteral("Sender engine started."));
 }
 
 void SenderEngine::stop()
 {
-    if (timer_.isActive()) {
-        timer_.stop();
-        emit stateMessage(QStringLiteral("发送引擎已停止"));
+    const bool wasRunning = timer_.isActive();
+    if (!wasRunning) {
+        return;
     }
+
+    timer_.stop();
+    sendClearFrames();
+    emit stateMessage(QStringLiteral("Sender engine stopped."));
 }
 
 bool SenderEngine::isRunning() const
@@ -85,6 +89,31 @@ void SenderEngine::resetMetricsWindow()
     metricsWindowStartMs_ = QDateTime::currentMSecsSinceEpoch();
     metricsWindowProcessed_ = 0;
     metricsWindowSent_ = 0;
+}
+
+void SenderEngine::sendClearFrames()
+{
+    if (!configured_) {
+        return;
+    }
+
+    QString error;
+    const quint64 clearFrameId = metrics_.framesProcessed + 1;
+    for (const DeviceTarget &target : config_.network.targets) {
+        DeviceFrame frame;
+        frame.sourceId = config_.network.sourceId;
+        frame.deviceId = target.id;
+        frame.deviceName = target.name;
+        frame.zoneId = target.zoneId;
+        frame.frameId = clearFrameId;
+        frame.timestampUs = currentTimestampMicros();
+        frame.sourceSize = QSize(config_.processing.processingWidth, config_.processing.processingHeight);
+        frame.clearRequested = true;
+
+        if (!sender_.sendFrame(frame, target.host, target.port, config_.network.maxPacketSize, &error)) {
+            emit errorOccurred(error);
+        }
+    }
 }
 
 void SenderEngine::processTick()

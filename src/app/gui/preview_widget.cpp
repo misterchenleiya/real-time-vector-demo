@@ -127,7 +127,7 @@ void PreviewWidget::paintEvent(QPaintEvent *event)
         painter.drawText(rect().adjusted(16, 16, -16, -16),
                          Qt::AlignTop | Qt::AlignLeft,
                          QStringLiteral("Local %1").arg(sceneFrame_.sourceId));
-    } else {
+    } else if (sourceImage_.isNull()) {
         painter.drawText(rect(), Qt::AlignCenter, QStringLiteral("Waiting for local media or network frames"));
     }
 }

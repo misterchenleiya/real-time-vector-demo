@@ -2,6 +2,8 @@
 
 `real-time-vector-demo` (`DEMO`) is a real-time vector engine prototype built for technical validation. It is not intended to be an end-user product. The project focuses on validating:
 
+![DEMO runtime screenshot](demo_compressed.png)
+
 - A processing pipeline that converts local images and videos into stable vector paths
 - Coordinate mapping from scene paths to multiple zones and devices
 - Real-time UDP distribution to multiple local DEMO instances
@@ -54,7 +56,10 @@ The three GUI windows are labeled as `DEMO Receiver 50010`, `DEMO Receiver 50011
 Important:
 
 - Only the window started with `configs/demo.sender.json` is configured to forward frames to the other two windows.
+- The GUI window sizes are fixed. Loading media will not resize a window, and manual resize is disabled.
+- Loading an image shows that image immediately. Loading a video shows its first frame immediately.
 - Load media and click `Start` in the `DEMO Sender` window to drive the two receiver windows.
+- Clicking `Stop` in the sender window stops transmission and clears the two receiver displays.
 - If you load media in a receiver window, it will only preview locally and will not forward frames, because the receiver configs do not define any `network.targets`.
 
 Start a CLI receiver instance on a specific config:

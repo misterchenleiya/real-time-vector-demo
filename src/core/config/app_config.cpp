@@ -49,7 +49,7 @@ bool AppConfigLoader::loadFromFile(const QString &path, AppConfig *config, QStri
 {
     if (config == nullptr) {
         if (error != nullptr) {
-            *error = QStringLiteral("配置输出对象为空");
+            *error = QStringLiteral("The config output object is null.");
         }
         return false;
     }
@@ -57,7 +57,7 @@ bool AppConfigLoader::loadFromFile(const QString &path, AppConfig *config, QStri
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
         if (error != nullptr) {
-            *error = QStringLiteral("无法打开配置文件: %1").arg(file.errorString());
+            *error = QStringLiteral("Failed to open config file: %1").arg(file.errorString());
         }
         return false;
     }
@@ -66,7 +66,7 @@ bool AppConfigLoader::loadFromFile(const QString &path, AppConfig *config, QStri
     const QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &parseError);
     if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
         if (error != nullptr) {
-            *error = QStringLiteral("配置文件 JSON 无法解析: %1").arg(parseError.errorString());
+            *error = QStringLiteral("Failed to parse config JSON: %1").arg(parseError.errorString());
         }
         return false;
     }

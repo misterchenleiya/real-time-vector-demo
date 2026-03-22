@@ -70,6 +70,10 @@ void MainWindow::buildUi()
     mediaLabel_ = new QLabel(QStringLiteral("-"), this);
     networkLabel_ = new QLabel(QStringLiteral("-"), this);
     metricsLabel_ = new QLabel(QStringLiteral("-"), this);
+    configLabel_->setWordWrap(true);
+    mediaLabel_->setWordWrap(true);
+    networkLabel_->setWordWrap(true);
+    metricsLabel_->setWordWrap(true);
     statusLayout->addRow(QStringLiteral("Mode"), modeLabel_);
     statusLayout->addRow(QStringLiteral("Config"), configLabel_);
     statusLayout->addRow(QStringLiteral("Media"), mediaLabel_);
@@ -109,7 +113,7 @@ void MainWindow::buildUi()
     rootLayout->addWidget(logView_);
 
     setCentralWidget(central);
-    resize(1180, 900);
+    setFixedSize(1180, 900);
     setWindowTitle(QStringLiteral("DEMO"));
 
     connect(loadConfigButton, &QPushButton::clicked, this, &MainWindow::chooseConfigFile);
@@ -163,6 +167,7 @@ void MainWindow::chooseMediaFile()
     mediaPath_ = path;
     mediaLabel_->setText(path);
     logMessage(QStringLiteral("Selected local media: %1").arg(path));
+    updateMediaPreview();
     updateStatusLabels();
 }
 
@@ -216,6 +221,13 @@ void MainWindow::stopWorkflow()
 void MainWindow::handleRemoteFrame(const demo::DeviceFrame &frame)
 {
     if (sender_.isRunning()) {
+        return;
+    }
+
+    if (frame.clearRequested) {
+        previewWidget_->clearPreview();
+        networkLabel_->setText(QStringLiteral("Receiver display cleared by %1").arg(frame.sourceId));
+        modeLabel_->setText(QStringLiteral("Receiver Standby"));
         return;
     }
 
@@ -306,6 +318,32 @@ QString MainWindow::windowTitleForConfig() const
     }
 
     return QStringLiteral("DEMO Receiver");
+}
+
+void MainWindow::updateMediaPreview()
+{
+    if (mediaPath_.isEmpty()) {
+        previewWidget_->clearPreview();
+        return;
+    }
+
+    applyUiParametersToConfig();
+
+    demo::MediaProcessor processor;
+    QString error;
+    if (!processor.open(mediaPath_, config_.processing, config_.network.sourceId, &error)) {
+        logMessage(error);
+        return;
+    }
+
+    demo::MediaProcessor::Output output;
+    if (!processor.next(&output, &error)) {
+        logMessage(error);
+        return;
+    }
+
+    previewWidget_->clearPreview();
+    previewWidget_->setSourceImage(output.previewImage);
 }
 
 void MainWindow::startReceiverMode()

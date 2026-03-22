@@ -110,7 +110,7 @@ bool MediaProcessor::open(const QString &path, const ProcessingConfig &config, c
     Q_UNUSED(config)
     Q_UNUSED(sourceId)
     if (error != nullptr) {
-        *error = QStringLiteral("当前构建未启用 OpenCV，无法处理本地图片/视频输入");
+        *error = QStringLiteral("This build does not include OpenCV, so local image/video processing is unavailable.");
     }
     return false;
 #endif
@@ -145,7 +145,7 @@ bool MediaProcessor::next(Output *output, QString *error)
 {
     if (output == nullptr) {
         if (error != nullptr) {
-            *error = QStringLiteral("输出帧对象为空");
+            *error = QStringLiteral("The output frame object is null.");
         }
         return false;
     }
@@ -154,7 +154,7 @@ bool MediaProcessor::next(Output *output, QString *error)
     return readNextFrame(&output->previewImage, &output->sceneFrame, error);
 #else
     if (error != nullptr) {
-        *error = QStringLiteral("当前构建未启用 OpenCV");
+        *error = QStringLiteral("OpenCV is not available in the current build.");
     }
     return false;
 #endif
@@ -296,7 +296,7 @@ bool MediaProcessor::openImage(const QString &path, QString *error)
     impl_->stillImage = cv::imread(path.toStdString(), cv::IMREAD_COLOR);
     if (impl_->stillImage.empty()) {
         if (error != nullptr) {
-            *error = QStringLiteral("无法读取图片文件: %1").arg(path);
+            *error = QStringLiteral("Failed to read image file: %1").arg(path);
         }
         return false;
     }
@@ -308,7 +308,7 @@ bool MediaProcessor::openVideo(const QString &path, QString *error)
     stillImageMode_ = false;
     if (!impl_->capture.open(path.toStdString())) {
         if (error != nullptr) {
-            *error = QStringLiteral("无法打开视频文件: %1").arg(path);
+            *error = QStringLiteral("Failed to open video file: %1").arg(path);
         }
         return false;
     }
@@ -319,7 +319,7 @@ bool MediaProcessor::readNextFrame(QImage *previewImage, SceneFrame *sceneFrame,
 {
     if (previewImage == nullptr || sceneFrame == nullptr) {
         if (error != nullptr) {
-            *error = QStringLiteral("媒体处理输出参数为空");
+            *error = QStringLiteral("The media processor output arguments are null.");
         }
         return false;
     }
@@ -335,7 +335,7 @@ bool MediaProcessor::readNextFrame(QImage *previewImage, SceneFrame *sceneFrame,
         }
         if (sourceFrame.empty()) {
             if (error != nullptr) {
-                *error = QStringLiteral("视频已经结束，且无法继续读取帧");
+                *error = QStringLiteral("The video ended and no more frames can be read.");
             }
             return false;
         }

@@ -27,7 +27,7 @@ bool PacketCodec::decodeFrame(const QByteArray &bytes, DeviceFrame *frame, QStri
 {
     if (frame == nullptr) {
         if (error != nullptr) {
-            *error = QStringLiteral("输出帧对象为空");
+            *error = QStringLiteral("The output frame object is null.");
         }
         return false;
     }
@@ -39,7 +39,7 @@ bool PacketCodec::decodeFrame(const QByteArray &bytes, DeviceFrame *frame, QStri
     stream >> magic >> version;
     if (magic != kFrameMagic || version != kFrameVersion) {
         if (error != nullptr) {
-            *error = QStringLiteral("设备帧协议头不匹配");
+            *error = QStringLiteral("The device frame header does not match the protocol.");
         }
         return false;
     }
@@ -48,7 +48,7 @@ bool PacketCodec::decodeFrame(const QByteArray &bytes, DeviceFrame *frame, QStri
     stream >> decoded;
     if (stream.status() != QDataStream::Ok || !decoded.isValid()) {
         if (error != nullptr) {
-            *error = QStringLiteral("设备帧解码失败");
+            *error = QStringLiteral("Failed to decode the device frame.");
         }
         return false;
     }
@@ -63,7 +63,7 @@ QVector<QByteArray> PacketCodec::fragmentFrame(const DeviceFrame &frame, int max
     const QByteArray payload = encodeFrame(frame);
     if (payload.isEmpty()) {
         if (error != nullptr) {
-            *error = QStringLiteral("编码后的设备帧为空");
+            *error = QStringLiteral("The encoded device frame is empty.");
         }
         return datagrams;
     }
@@ -94,7 +94,7 @@ bool PacketCodec::decodeFragmentDatagram(const QByteArray &datagram, FragmentPac
 {
     if (fragment == nullptr) {
         if (error != nullptr) {
-            *error = QStringLiteral("输出分片对象为空");
+            *error = QStringLiteral("The output fragment object is null.");
         }
         return false;
     }
@@ -116,14 +116,14 @@ bool PacketCodec::decodeFragmentDatagram(const QByteArray &datagram, FragmentPac
 
     if (magic != kFragmentMagic || version != kFragmentVersion || decoded.fragmentCount == 0) {
         if (error != nullptr) {
-            *error = QStringLiteral("UDP 分片协议头不匹配");
+            *error = QStringLiteral("The UDP fragment header does not match the protocol.");
         }
         return false;
     }
 
     if (stream.status() != QDataStream::Ok || decoded.payload.isEmpty()) {
         if (error != nullptr) {
-            *error = QStringLiteral("UDP 分片解码失败");
+            *error = QStringLiteral("Failed to decode the UDP fragment.");
         }
         return false;
     }

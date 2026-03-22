@@ -41,6 +41,7 @@ private:
     void stopReceiverMode();
     void applyUiParametersToConfig();
     bool isSenderConfig() const;
+    void updateMediaPreview();
     QString windowTitleForConfig() const;
     void updateStatusLabels();
     void logMessage(const QString &message);
