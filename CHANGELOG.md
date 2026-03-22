@@ -1,0 +1,20 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- 初始化 `real-time-vector-demo` MVP 工程骨架，包含核心库、Qt Widgets GUI、CLI 和基础测试入口。
+- 新增基于 JSON 的发送端 / 接收端配置样例，用于本地多实例 UDP fan-out 联调。
+- 新增 MVP 架构 ADR，明确媒体处理、路径稳定化、场景路由和 UDP 输出方案。
+- 新增 `Makefile`，提供统一的 `build`、`run` 和 `clean` 入口，便于本地构建和启动 DEMO。
+
+### Changed
+
+- 将 MVP 输出模型收敛为“发送端生成设备矢量帧并通过本地回环 UDP 分发给多个 DEMO 实例显示”。
+- 将 `README` 翻译为英文，并补充基于 `make` 的构建和运行说明。

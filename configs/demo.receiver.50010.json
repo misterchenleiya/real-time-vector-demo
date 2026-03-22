@@ -1,0 +1,34 @@
+{
+  "name": "DEMO Receiver 50010",
+  "processing": {
+    "targetFps": 24,
+    "processingWidth": 960,
+    "processingHeight": 540,
+    "maxPaths": 6,
+    "minAreaRatio": 0.0025,
+    "cannyLowThreshold": 48,
+    "cannyHighThreshold": 128,
+    "gaussianKernelSize": 5,
+    "morphologyIterations": 1,
+    "approximationEpsilonRatio": 0.015,
+    "resamplePoints": 48,
+    "stabilityBlend": 0.7,
+    "matchDistanceThreshold": 0.12,
+    "loopVideo": true
+  },
+  "network": {
+    "sourceId": "demo-receiver-50010",
+    "listenPort": 50010,
+    "fragmentTimeoutMs": 200,
+    "targets": []
+  },
+  "zones": [
+    {
+      "id": "full",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0
+    }
+  ]
+}
