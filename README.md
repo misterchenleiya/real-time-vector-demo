@@ -37,11 +37,19 @@ make build
 
 ## Run
 
-Start a GUI receiver instance:
+Start the default three-window GUI demo:
 
 ```bash
 make run
 ```
+
+This launches:
+
+- `configs/demo.receiver.50010.json`
+- `configs/demo.receiver.50011.json`
+- `configs/demo.sender.json`
+
+Load media and click `Start` in the sender window to drive the other two receiver windows.
 
 Start a CLI receiver instance on a specific config:
 
@@ -65,6 +73,8 @@ You can still run the binaries directly if needed:
 
 ```bash
 ./build/demo_gui --config configs/demo.receiver.50010.json
+./build/demo_gui --config configs/demo.receiver.50011.json
+./build/demo_gui --config configs/demo.sender.json
 ./build/demo_cli --mode sender --config configs/demo.sender.json --media /path/to/video.mp4
 ```
 

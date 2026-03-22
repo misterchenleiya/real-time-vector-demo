@@ -19,3 +19,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 将 MVP 输出模型收敛为“发送端生成设备矢量帧并通过本地回环 UDP 分发给多个 DEMO 实例显示”。
 - 将 `README` 翻译为英文，并补充基于 `make` 的构建和运行说明。
 - 将本地 sender 配置的 `maxPacketSize` 提高到 `8192`，降低 loopback 演示时较大路径帧触发多分片的概率。
+- 将默认 `make run` 调整为一次启动两个 receiver GUI 窗口和一个 sender GUI 窗口，便于本机三窗口联调。
