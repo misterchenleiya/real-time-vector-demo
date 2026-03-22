@@ -20,6 +20,7 @@
     "sourceId": "demo-sender-1",
     "listenPort": 50000,
     "fragmentTimeoutMs": 200,
+    "maxPacketSize": 8192,
     "targets": [
       {
         "id": "display-a",
