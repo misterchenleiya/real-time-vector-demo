@@ -19,7 +19,7 @@ bool UdpDeviceReceiver::listen(quint16 port, QString *error)
 
     if (!socket_.bind(QHostAddress::AnyIPv4, port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
         if (error != nullptr) {
-            *error = QStringLiteral("监听 UDP 端口 %1 失败: %2").arg(port).arg(socket_.errorString());
+            *error = QStringLiteral("Failed to bind UDP port %1: %2").arg(port).arg(socket_.errorString());
         }
         return false;
     }
@@ -88,7 +88,7 @@ void UdpDeviceReceiver::handleReadyRead()
         }
 
         if (fragment.fragmentIndex >= partial.fragments.size()) {
-            emit receiverError(QStringLiteral("收到越界 UDP 分片索引"));
+            emit receiverError(QStringLiteral("Received an out-of-range UDP fragment index."));
             partialFrames_.remove(key);
             continue;
         }

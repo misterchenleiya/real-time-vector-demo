@@ -37,7 +37,7 @@ MainWindow::MainWindow(const QString &initialConfigPath, QWidget *parent)
     if (!configToLoad.isEmpty()) {
         loadConfigFile(configToLoad);
     } else {
-        logMessage(QStringLiteral("未找到默认配置，请先手动加载 JSON 配置文件"));
+        logMessage(QStringLiteral("No default config was found. Load a JSON config file manually."));
     }
 
     updateStatusLabels();
@@ -49,11 +49,11 @@ void MainWindow::buildUi()
     auto *rootLayout = new QVBoxLayout(central);
 
     auto *controlsLayout = new QHBoxLayout();
-    auto *loadConfigButton = new QPushButton(QStringLiteral("加载配置"), this);
-    auto *loadMediaButton = new QPushButton(QStringLiteral("加载媒体"), this);
-    auto *clearMediaButton = new QPushButton(QStringLiteral("清空媒体"), this);
-    auto *startButton = new QPushButton(QStringLiteral("开始"), this);
-    auto *stopButton = new QPushButton(QStringLiteral("停止"), this);
+    auto *loadConfigButton = new QPushButton(QStringLiteral("Load Config"), this);
+    auto *loadMediaButton = new QPushButton(QStringLiteral("Load Media"), this);
+    auto *clearMediaButton = new QPushButton(QStringLiteral("Clear Media"), this);
+    auto *startButton = new QPushButton(QStringLiteral("Start"), this);
+    auto *stopButton = new QPushButton(QStringLiteral("Stop"), this);
 
     controlsLayout->addWidget(loadConfigButton);
     controlsLayout->addWidget(loadMediaButton);
@@ -63,20 +63,24 @@ void MainWindow::buildUi()
     controlsLayout->addWidget(stopButton);
     rootLayout->addLayout(controlsLayout);
 
-    auto *statusGroup = new QGroupBox(QStringLiteral("运行状态"), this);
+    auto *statusGroup = new QGroupBox(QStringLiteral("Status"), this);
     auto *statusLayout = new QFormLayout(statusGroup);
-    modeLabel_ = new QLabel(QStringLiteral("待机"), this);
+    modeLabel_ = new QLabel(QStringLiteral("Idle"), this);
     configLabel_ = new QLabel(QStringLiteral("-"), this);
     mediaLabel_ = new QLabel(QStringLiteral("-"), this);
     networkLabel_ = new QLabel(QStringLiteral("-"), this);
     metricsLabel_ = new QLabel(QStringLiteral("-"), this);
-    statusLayout->addRow(QStringLiteral("模式"), modeLabel_);
-    statusLayout->addRow(QStringLiteral("配置"), configLabel_);
-    statusLayout->addRow(QStringLiteral("媒体"), mediaLabel_);
-    statusLayout->addRow(QStringLiteral("网络"), networkLabel_);
-    statusLayout->addRow(QStringLiteral("指标"), metricsLabel_);
+    configLabel_->setWordWrap(true);
+    mediaLabel_->setWordWrap(true);
+    networkLabel_->setWordWrap(true);
+    metricsLabel_->setWordWrap(true);
+    statusLayout->addRow(QStringLiteral("Mode"), modeLabel_);
+    statusLayout->addRow(QStringLiteral("Config"), configLabel_);
+    statusLayout->addRow(QStringLiteral("Media"), mediaLabel_);
+    statusLayout->addRow(QStringLiteral("Network"), networkLabel_);
+    statusLayout->addRow(QStringLiteral("Metrics"), metricsLabel_);
 
-    auto *paramsGroup = new QGroupBox(QStringLiteral("关键参数"), this);
+    auto *paramsGroup = new QGroupBox(QStringLiteral("Key Parameters"), this);
     auto *paramsLayout = new QFormLayout(paramsGroup);
     targetFpsSpin_ = new QSpinBox(this);
     targetFpsSpin_->setRange(1, 120);
@@ -90,10 +94,10 @@ void MainWindow::buildUi()
     stabilityBlendSpin_->setRange(0.0, 0.98);
     stabilityBlendSpin_->setDecimals(2);
     stabilityBlendSpin_->setSingleStep(0.05);
-    paramsLayout->addRow(QStringLiteral("目标 FPS"), targetFpsSpin_);
-    paramsLayout->addRow(QStringLiteral("最大路径数"), maxPathsSpin_);
-    paramsLayout->addRow(QStringLiteral("最小面积比"), minAreaRatioSpin_);
-    paramsLayout->addRow(QStringLiteral("稳定混合"), stabilityBlendSpin_);
+    paramsLayout->addRow(QStringLiteral("Target FPS"), targetFpsSpin_);
+    paramsLayout->addRow(QStringLiteral("Max Paths"), maxPathsSpin_);
+    paramsLayout->addRow(QStringLiteral("Min Area Ratio"), minAreaRatioSpin_);
+    paramsLayout->addRow(QStringLiteral("Stability Blend"), stabilityBlendSpin_);
 
     auto *topLayout = new QHBoxLayout();
     topLayout->addWidget(statusGroup, 2);
@@ -109,7 +113,7 @@ void MainWindow::buildUi()
     rootLayout->addWidget(logView_);
 
     setCentralWidget(central);
-    resize(1180, 900);
+    setFixedSize(1180, 900);
     setWindowTitle(QStringLiteral("DEMO"));
 
     connect(loadConfigButton, &QPushButton::clicked, this, &MainWindow::chooseConfigFile);
@@ -140,7 +144,7 @@ void MainWindow::chooseConfigFile()
 {
     const QString path = QFileDialog::getOpenFileName(
         this,
-        QStringLiteral("选择配置文件"),
+        QStringLiteral("Select Config File"),
         QDir::currentPath(),
         QStringLiteral("JSON (*.json)"));
     if (!path.isEmpty()) {
@@ -153,7 +157,7 @@ void MainWindow::chooseMediaFile()
     const QString startDir = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     const QString path = QFileDialog::getOpenFileName(
         this,
-        QStringLiteral("选择图片或视频"),
+        QStringLiteral("Select Image or Video"),
         startDir,
         QStringLiteral("Media (*.mp4 *.mov *.avi *.mkv *.png *.jpg *.jpeg *.bmp *.webp)"));
     if (path.isEmpty()) {
@@ -162,7 +166,8 @@ void MainWindow::chooseMediaFile()
 
     mediaPath_ = path;
     mediaLabel_->setText(path);
-    logMessage(QStringLiteral("已选择本地媒体: %1").arg(path));
+    logMessage(QStringLiteral("Selected local media: %1").arg(path));
+    updateMediaPreview();
     updateStatusLabels();
 }
 
@@ -171,7 +176,7 @@ void MainWindow::clearMediaSelection()
     sender_.clearMedia();
     mediaPath_.clear();
     previewWidget_->clearPreview();
-    logMessage(QStringLiteral("已清空本地媒体，回到接收待机模式"));
+    logMessage(QStringLiteral("Cleared local media and returned to receiver standby."));
     startReceiverMode();
     updateStatusLabels();
 }
@@ -182,7 +187,7 @@ void MainWindow::startWorkflow()
     stopReceiverMode();
 
     if (mediaPath_.isEmpty()) {
-        logMessage(QStringLiteral("当前没有本地媒体，自动进入接收模式"));
+        logMessage(QStringLiteral("No local media is loaded. Switching to receiver mode."));
         startReceiverMode();
         return;
     }
@@ -219,16 +224,23 @@ void MainWindow::handleRemoteFrame(const demo::DeviceFrame &frame)
         return;
     }
 
+    if (frame.clearRequested) {
+        previewWidget_->clearPreview();
+        networkLabel_->setText(QStringLiteral("Receiver display cleared by %1").arg(frame.sourceId));
+        modeLabel_->setText(QStringLiteral("Receiver Standby"));
+        return;
+    }
+
     previewWidget_->setDeviceFrame(frame);
-    networkLabel_->setText(QStringLiteral("监听 %1，最近源 %2 -> %3")
+    networkLabel_->setText(QStringLiteral("Listening on %1, latest source %2 -> %3")
                                .arg(config_.network.listenPort)
                                .arg(frame.sourceId, frame.deviceId));
-    modeLabel_->setText(QStringLiteral("接收中"));
+    modeLabel_->setText(QStringLiteral("Receiving"));
 }
 
 void MainWindow::handleRemoteError(const QString &message)
 {
-    logMessage(QStringLiteral("接收错误: %1").arg(message));
+    logMessage(QStringLiteral("Receiver error: %1").arg(message));
 }
 
 void MainWindow::handleSenderPreview(const QImage &image)
@@ -239,13 +251,13 @@ void MainWindow::handleSenderPreview(const QImage &image)
 void MainWindow::handleSenderScene(const demo::SceneFrame &frame)
 {
     previewWidget_->setSceneFrame(frame);
-    modeLabel_->setText(QStringLiteral("发送中"));
+    modeLabel_->setText(QStringLiteral("Sending"));
 }
 
 void MainWindow::handleSenderMetrics(const demo::EngineMetrics &metrics)
 {
     metricsLabel_->setText(
-        QStringLiteral("处理 %1 FPS | 发送 %2 FPS | paths=%3 | devices=%4 | latency=%5ms")
+        QStringLiteral("Processing %1 FPS | Sending %2 FPS | paths=%3 | devices=%4 | latency=%5ms")
             .arg(metrics.processingFps, 0, 'f', 1)
             .arg(metrics.sendFps, 0, 'f', 1)
             .arg(metrics.lastPathCount)
@@ -255,7 +267,7 @@ void MainWindow::handleSenderMetrics(const demo::EngineMetrics &metrics)
 
 void MainWindow::handleSenderError(const QString &message)
 {
-    logMessage(QStringLiteral("发送错误: %1").arg(message));
+    logMessage(QStringLiteral("Sender error: %1").arg(message));
 }
 
 void MainWindow::handleStateMessage(const QString &message)
@@ -276,11 +288,12 @@ void MainWindow::loadConfigFile(const QString &path)
     config_ = loaded;
     configPath_ = path;
     configLabel_->setText(path);
+    setWindowTitle(windowTitleForConfig());
     targetFpsSpin_->setValue(config_.processing.targetFps);
     maxPathsSpin_->setValue(config_.processing.maxPaths);
     minAreaRatioSpin_->setValue(config_.processing.minAreaRatio);
     stabilityBlendSpin_->setValue(config_.processing.stabilityBlend);
-    logMessage(QStringLiteral("已加载配置: %1").arg(path));
+    logMessage(QStringLiteral("Loaded config: %1").arg(path));
 
     if (mediaPath_.isEmpty() && !sender_.isRunning()) {
         startReceiverMode();
@@ -289,10 +302,54 @@ void MainWindow::loadConfigFile(const QString &path)
     }
 }
 
+bool MainWindow::isSenderConfig() const
+{
+    return !config_.network.targets.isEmpty();
+}
+
+QString MainWindow::windowTitleForConfig() const
+{
+    if (isSenderConfig()) {
+        return QStringLiteral("DEMO Sender");
+    }
+
+    if (config_.network.listenPort > 0) {
+        return QStringLiteral("DEMO Receiver %1").arg(config_.network.listenPort);
+    }
+
+    return QStringLiteral("DEMO Receiver");
+}
+
+void MainWindow::updateMediaPreview()
+{
+    if (mediaPath_.isEmpty()) {
+        previewWidget_->clearPreview();
+        return;
+    }
+
+    applyUiParametersToConfig();
+
+    demo::MediaProcessor processor;
+    QString error;
+    if (!processor.open(mediaPath_, config_.processing, config_.network.sourceId, &error)) {
+        logMessage(error);
+        return;
+    }
+
+    demo::MediaProcessor::Output output;
+    if (!processor.next(&output, &error)) {
+        logMessage(error);
+        return;
+    }
+
+    previewWidget_->clearPreview();
+    previewWidget_->setSourceImage(output.previewImage);
+}
+
 void MainWindow::startReceiverMode()
 {
     if (config_.network.listenPort == 0) {
-        logMessage(QStringLiteral("当前配置未设置 listenPort，无法进入接收模式"));
+        logMessage(QStringLiteral("The current config does not define listenPort, so receiver mode cannot start."));
         return;
     }
 
@@ -306,9 +363,9 @@ void MainWindow::startReceiverMode()
     }
 
     receiverModeActive_ = true;
-    networkLabel_->setText(QStringLiteral("监听 127.0.0.1:%1").arg(config_.network.listenPort));
-    modeLabel_->setText(QStringLiteral("接收待机"));
-    logMessage(QStringLiteral("已进入接收模式，监听端口 %1").arg(config_.network.listenPort));
+    networkLabel_->setText(QStringLiteral("Listening on 127.0.0.1:%1").arg(config_.network.listenPort));
+    modeLabel_->setText(QStringLiteral("Receiver Standby"));
+    logMessage(QStringLiteral("Entered receiver mode and bound port %1.").arg(config_.network.listenPort));
 }
 
 void MainWindow::stopReceiverMode()
@@ -330,18 +387,18 @@ void MainWindow::applyUiParametersToConfig()
 void MainWindow::updateStatusLabels()
 {
     if (sender_.isRunning()) {
-        modeLabel_->setText(QStringLiteral("发送中"));
+        modeLabel_->setText(QStringLiteral("Sending"));
     } else if (receiverModeActive_) {
-        modeLabel_->setText(QStringLiteral("接收待机"));
+        modeLabel_->setText(QStringLiteral("Receiver Standby"));
     } else {
-        modeLabel_->setText(QStringLiteral("待机"));
+        modeLabel_->setText(QStringLiteral("Idle"));
     }
 
     configLabel_->setText(configPath_.isEmpty() ? QStringLiteral("-") : configPath_);
-    mediaLabel_->setText(mediaPath_.isEmpty() ? QStringLiteral("(无)") : mediaPath_);
+    mediaLabel_->setText(mediaPath_.isEmpty() ? QStringLiteral("(none)") : mediaPath_);
 
     if (!sender_.isRunning() && !receiverModeActive_) {
-        networkLabel_->setText(QStringLiteral("未监听"));
+        networkLabel_->setText(QStringLiteral("Not listening"));
     }
 }
 

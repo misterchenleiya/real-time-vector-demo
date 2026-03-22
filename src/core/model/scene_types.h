@@ -56,6 +56,7 @@ struct DeviceFrame {
     quint64 frameId = 0;
     qint64 timestampUs = 0;
     QSize sourceSize;
+    bool clearRequested = false;
     QVector<PathStroke> paths;
 
     bool isValid() const;

@@ -37,6 +37,10 @@ qint64 currentTimestampMicros()
 
 QString describeFrame(const DeviceFrame &frame)
 {
+    if (frame.clearRequested) {
+        return QStringLiteral("%1/%2 clear").arg(frame.sourceId, frame.deviceId);
+    }
+
     return QStringLiteral("%1/%2 frame=%3 paths=%4")
         .arg(frame.sourceId, frame.deviceId)
         .arg(frame.frameId)
@@ -64,6 +68,7 @@ QDataStream &operator<<(QDataStream &stream, const DeviceFrame &frame)
            << frame.frameId
            << frame.timestampUs
            << frame.sourceSize
+           << frame.clearRequested
            << frame.paths;
     return stream;
 }
@@ -77,6 +82,7 @@ QDataStream &operator>>(QDataStream &stream, DeviceFrame &frame)
            >> frame.frameId
            >> frame.timestampUs
            >> frame.sourceSize
+           >> frame.clearRequested
            >> frame.paths;
     return stream;
 }

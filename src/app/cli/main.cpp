@@ -19,16 +19,16 @@ int main(int argc, char *argv[])
 
     QCommandLineOption modeOption(
         QStringList() << QStringLiteral("m") << QStringLiteral("mode"),
-        QStringLiteral("运行模式: sender 或 receiver"),
+        QStringLiteral("Run mode: sender or receiver"),
         QStringLiteral("mode"),
         QStringLiteral("receiver"));
     QCommandLineOption configOption(
         QStringList() << QStringLiteral("c") << QStringLiteral("config"),
-        QStringLiteral("配置文件路径"),
+        QStringLiteral("Config file path"),
         QStringLiteral("path"));
     QCommandLineOption mediaOption(
         QStringList() << QStringLiteral("media"),
-        QStringLiteral("发送模式下的媒体文件路径"),
+        QStringLiteral("Media file path used in sender mode"),
         QStringLiteral("path"));
 
     parser.addOption(modeOption);
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     parser.process(app);
 
     if (!parser.isSet(configOption)) {
-        qCritical() << "必须提供 --config";
+        qCritical() << "--config is required";
         return 1;
     }
 
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     const QString mode = parser.value(modeOption).trimmed().toLower();
     if (mode == QStringLiteral("sender")) {
         if (!parser.isSet(mediaOption)) {
-            qCritical() << "sender 模式必须提供 --media";
+            qCritical() << "--media is required in sender mode";
             return 1;
         }
 
@@ -95,6 +95,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    qInfo().noquote() << QStringLiteral("接收模式已启动，监听 127.0.0.1:%1").arg(config.network.listenPort);
+    qInfo().noquote() << QStringLiteral("Receiver mode started. Listening on 127.0.0.1:%1").arg(config.network.listenPort);
     return app.exec();
 }

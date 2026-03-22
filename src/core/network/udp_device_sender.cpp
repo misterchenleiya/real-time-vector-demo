@@ -21,7 +21,7 @@ bool UdpDeviceSender::sendFrame(const DeviceFrame &frame, const QString &host, q
         const qint64 written = socket.writeDatagram(datagram, QHostAddress(host), port);
         if (written != datagram.size()) {
             if (error != nullptr) {
-                *error = QStringLiteral("UDP 发送失败: %1").arg(socket.errorString());
+                *error = QStringLiteral("UDP send failed: %1").arg(socket.errorString());
             }
             return false;
         }

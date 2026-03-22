@@ -41,6 +41,7 @@ private slots:
 
 private:
     void resetMetricsWindow();
+    void sendClearFrames();
 
     QTimer timer_;
     AppConfig config_;
