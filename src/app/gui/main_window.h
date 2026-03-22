@@ -40,6 +40,8 @@ private:
     void startReceiverMode();
     void stopReceiverMode();
     void applyUiParametersToConfig();
+    bool isSenderConfig() const;
+    QString windowTitleForConfig() const;
     void updateStatusLabels();
     void logMessage(const QString &message);
     QString defaultConfigPath() const;

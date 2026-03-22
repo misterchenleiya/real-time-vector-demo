@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     QCommandLineOption configOption(
         QStringList() << QStringLiteral("c") << QStringLiteral("config"),
-        QStringLiteral("配置文件路径"),
+        QStringLiteral("Config file path"),
         QStringLiteral("path"));
     parser.addOption(configOption);
     parser.process(app);

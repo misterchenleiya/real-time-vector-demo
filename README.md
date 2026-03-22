@@ -49,7 +49,13 @@ This launches:
 - `configs/demo.receiver.50011.json`
 - `configs/demo.sender.json`
 
-Load media and click `Start` in the sender window to drive the other two receiver windows.
+The three GUI windows are labeled as `DEMO Receiver 50010`, `DEMO Receiver 50011`, and `DEMO Sender`.
+
+Important:
+
+- Only the window started with `configs/demo.sender.json` is configured to forward frames to the other two windows.
+- Load media and click `Start` in the `DEMO Sender` window to drive the two receiver windows.
+- If you load media in a receiver window, it will only preview locally and will not forward frames, because the receiver configs do not define any `network.targets`.
 
 Start a CLI receiver instance on a specific config:
 
